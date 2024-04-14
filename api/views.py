@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .models import Category, Services, Profile, UsedServices, MultipleServiceImages
 from .serializers import CategorySerializer, ServiceSerializer, MultipleServiceImageSerializer, ProfileSerializer, UsedServicesSerializer
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 
@@ -17,6 +17,10 @@ class ListCategories(APIView):
             'categories': serialized.data
         }
         return Response(context)
+
+class DetailServiceView(RetrieveAPIView):
+    queryset = Services
+    serializer_class = ServiceSerializer
 
 class ListServices(ListAPIView):
     queryset = Services.objects.all()
