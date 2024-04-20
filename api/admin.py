@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Services, MultipleServiceImages, Profile, UsedServices
+from .models import Category, Services, MultipleServiceImages, Profile, UsedServices, LoginSystem
 
 admin.site.register(Category)
 
@@ -16,3 +16,8 @@ class AdminViewProfile(admin.ModelAdmin):
 @admin.register(UsedServices)
 class AdminViewUsedServices(admin.ModelAdmin):
     list_display = ['who_used', 'which_services', 'when']
+
+@admin.register(LoginSystem)
+class AdminViewLoginSystem(admin.ModelAdmin):
+    list_display = ['username', 'password']
+    search_fields = ['username', 'password']

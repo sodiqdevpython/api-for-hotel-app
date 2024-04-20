@@ -81,6 +81,17 @@ class Profile(models.Model):
         return self.who.username
 
 
+class LoginSystem(models.Model):
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    password = models.CharField(max_length=200)
+
+    def __str__(self):
+        return str(self.username)
+    
+    class Meta:
+        verbose_name = 'Login System'
+        verbose_name_plural = 'Login systems'
+
 class UsedServices(models.Model):
     who_used = models.ForeignKey(Profile, on_delete=models.CASCADE)
     which_services = models.ForeignKey(Services, on_delete=models.CASCADE)
@@ -105,7 +116,7 @@ class UsedServices(models.Model):
             raise ValidationError('Lyuks foydalanuvchilar har bir xizmat uchun faqat 4 marta qo\'shishlari mumkin.')
 
     def save(self, *args, **kwargs):
-        # Ob'ekt uchun clean metodini chaqirish (bu cheklovlarni qo'llaydi)
+        # Obyekt uchun clean metodini chaqirish (bu cheklovlarni qo'llaydi)
         self.clean()
         # Agar clean metodida hech qanday muammo bo'lmasa, ob'ektni saqlash
         super().save(*args, **kwargs)
