@@ -13,7 +13,7 @@ class CategorySerializer(ModelSerializer):
 class ServiceSerializer(ModelSerializer):
     class Meta:
         model = Services
-        fields = ['id' ,'title', 'open', 'close', 'location', 'who_has_this', 'category', 'tel_number', 'info', 'image', 'more_images']
+        fields = ['id' ,'title', 'open', 'close', 'location', 'who_has_this', 'category', 'tel_number', 'info', 'image','qr_code' ,'more_images']
         depth = 2
 
 
@@ -35,10 +35,11 @@ class UsedServicesSerializer(ModelSerializer):
     user_name = serializers.SerializerMethodField()
     which_services_title = serializers.SerializerMethodField()
     when = DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = UsedServices
-        fields = ['who_used', 'user_name', 'which_services', 'which_services_title', 'when']
+        fields = ['who_used', 'user_name', 'which_services', 'which_services_title', 'when', 'image']
 
     def get_user_name(self, obj):
         return obj.who_used.who.username
@@ -46,3 +47,6 @@ class UsedServicesSerializer(ModelSerializer):
     def get_which_services_title(self, obj):
         return obj.which_services.title
 
+    def get_image(self, obj):
+        print(obj.which_services.image)
+        return str(obj.which_services.image)
