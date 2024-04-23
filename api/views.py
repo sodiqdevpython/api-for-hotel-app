@@ -60,7 +60,7 @@ class ListServices(APIView):
         serializered = ServiceSerializer(get_list, many=True).data
         if user_data.profile.status=='ST':
             allowed_services_data = Services.objects.filter(who_has_this='ST')
-            serializered_allowed_services = ServiceSerializer(allowed_services_data, many=True).data
+            serializered_allowed_services = ServiceSerializer(allowed_services_data, many=True).datax
             context = {
                 'status': 'Standard',
                 'result': serializered,
@@ -70,6 +70,7 @@ class ListServices(APIView):
             context = {
                 'status': 'Lyuks',
                 'result': serializered,
+                'allowed_services': serializered
             }
         return Response(context)
 
