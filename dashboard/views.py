@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect, HttpResponse
-from api.models import Services, Profile, UsedServices, LoginSystem
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from api.models import Profile, LoginSystem, UsedServices, Services
 from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .forms import CreateNewUserForm, CustomLoginForm
+from .forms import CreateNewUserForm, CustomLoginForm, CreateServiceForm, UsedServiceForm
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 
 @login_required
 def dashboard(request):
@@ -51,7 +52,7 @@ def login_view(request):
     }
     return render(request, 'authentication-login.html', context)
 
-
+@login_required
 def add_new_user(request):
     if request.method=='POST':
         form = CreateNewUserForm(request.POST or None)
@@ -78,7 +79,7 @@ def add_new_user(request):
                 tel_number = data['tel_number']
             )
 
-            return redirect('users_profile')
+            return redirect('user_profile_detail', username=data['username'])
         else:
             print(form.errors)
             return HttpResponse('Nimadir xato ketdi')
@@ -90,3 +91,60 @@ def add_new_user(request):
     }
 
     return render(request, 'profile/register.html', context)
+
+@login_required
+def create_new_service(request):
+    if request.method == 'POST':
+        form = CreateServiceForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+        else:
+            pass
+
+    else:
+        form = CreateServiceForm()
+    
+    context = {
+        'form': form
+    }
+
+    return render(request, 'service/create_service.html', context)
+
+@login_required
+def show_user_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    used_services = UsedServices.objects.filter(who_used__who__username=username)
+    return render(request, 'profile/detail_user_profile.html', {'user': user, 'used_services': used_services})
+
+@login_required
+def delete_user(request, username):
+    user = get_object_or_404(User, username=username)
+    if request.method=='POST':
+        user.delete()
+        return redirect('users_profile')
+    else:
+        return HttpResponse('Nimadir xato ketdi')
+
+def add_used_service(request, username, which_service_id):
+
+    user = get_object_or_404(User, username=username)
+    profile = get_object_or_404(Profile, who=user)
+    service = get_object_or_404(Services, pk=which_service_id)
+
+    if request.method == 'POST':
+        form = UsedServiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        initial_data = {'who_used': profile.id, 'which_services': service.id}
+        form = UsedServiceForm(initial=initial_data)
+
+    context = {
+        'form': form,
+        'user_name': user.first_name,
+        'service': service
+    }
+
+    return render(request, 'service/add_used_service.html', context)
