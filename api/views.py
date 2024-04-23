@@ -116,8 +116,6 @@ class CreateUsedServicesView(CreateAPIView):
 class LoginViewAPI(APIView):
 
     def get(self, request, username, password):
-        username = username.lower()
-        print(username)
         user = get_object_or_404(User, username=username)
         if LoginSystem.objects.filter(username=user.id, password=password):
             context = {
