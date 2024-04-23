@@ -5,9 +5,7 @@ from django.contrib.auth.models import User
 from .forms import CreateNewUserForm, CustomLoginForm, CreateServiceForm, UsedServiceForm
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
-from django.core.exceptions import PermissionDenied
 
-@login_required
 def dashboard(request):
     services = Services.objects.all()[:10]
     overall_users = Profile.objects.all().count()
@@ -54,7 +52,7 @@ def login_view(request):
 
 @login_required
 def add_new_user(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         form = CreateNewUserForm(request.POST or None)
         if form.is_valid():
             data = form.cleaned_data
@@ -120,7 +118,7 @@ def show_user_profile(request, username):
 @login_required
 def delete_user(request, username):
     user = get_object_or_404(User, username=username)
-    if request.method=='POST':
+    if request.method == 'POST':
         user.delete()
         return redirect('users_profile')
     else:
@@ -136,7 +134,7 @@ def add_used_service(request, username, which_service_id):
         form = UsedServiceForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('success_page')
     else:
         initial_data = {'who_used': profile.id, 'which_services': service.id}
         form = UsedServiceForm(initial=initial_data)
@@ -148,3 +146,6 @@ def add_used_service(request, username, which_service_id):
     }
 
     return render(request, 'service/add_used_service.html', context)
+
+def success_page(request):
+    return render(request, 'service/success_used_service.html')

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="table-responsive my-1" style="max-height: 700px; overflow-y: auto;">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Status</th>
+        <th>Telefon raqami</th>
+        <th>Ketish kuni</th>
+        <th>O'chirish</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for i in profile_data %}
+            <tr>
+                {% if i.gender == 'ER' %}
+                    <td>{{ forloop.counter }} <img style="border-radius: 20px; width: 7%" src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYHc2vXjRAP7yh834Xf76lUIyKqAzrX2pG8i3qQ9fDMA&s' /><a href="{% url 'user_profile_detail' i.who.username %}">{{ i.who.first_name }} {{ i.who.last_name }}</a></td>
+                {% else %}
+                    <td>{{ forloop.counter }} <img style="border-radius: 20px; width: 7%" src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQNUGh7DaKG4Xw17OhfXpF4a9hBmG9UDxnVsvyqH0I3g&s' /><a href="{% url 'user_profile_detail' i.who.username %}">{{ i.who.first_name }} {{ i.who.last_name }}</a></td>
+                {% endif %}
+                {% if i.status == 'ST' %}
+                    <td><button style="padding-left: 30px; padding-right: 30px;" class='btn btn-primary'>Standart</button></td>
+                {% else %}
+                <td><button style="padding-left: 40px; padding-right: 40px;" class='btn btn-success'>Lyuks</button></td>
+                {% endif %}
+                <td>{{ i.tel_number }}</td>
+                <td>{{ i.time_to_leave|date:"d.m.Y" }}</td>
+                <td>
+                    <form method="post" action="{% url 'delete_user' i.who.username %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">O'chirsh</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<a href="{% url 'create_user' %}" class='btn btn-primary ms-4 mt-3'>Yangi foydalanuvchi qo'shish</a>
+{% endblock content %}
