@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="table-responsive my-1" style="max-height: 700px; overflow-y: auto;">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Status</th>
+        <th>Telefon raqami</th>
+        <th>Ketish kuni</th>
+        <th>O'chirish</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for i in profile_data %}
+            <tr>
+                <td></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<a href="{% url 'create_user' %}" class='btn btn-primary ms-4 mt-3'>Yangi foydalanuvchi qo'shish</a>
+{% endblock content %}

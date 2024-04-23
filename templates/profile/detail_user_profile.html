@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <section class="shadow" style="border-radius: 20px;">
+          <div class="container pt-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+              <div style="width: 100%;" class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                  <div class="row g-0">
+                    <div style="border-radius: 200px; border-top-left-radius: .5rem; border-bottom-left-radius: .5rem; background: #f6d365; background: -webkit-linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1)); background: linear-gradient(to right bottom, rgba(246, 211, 101, 1), rgba(253, 160, 133, 1))" class="col-md-4 text-center text-white">
+                      {% if user.profile.gender == 'ER' %}
+                        <img style="border-radius: 10px;" src="{% static 'images/profile/male.png' %}"
+                          alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
+                      {% else %}
+                        <img style="border-radius: 10px;" src="{% static 'images/profile/female.png' %}"
+                          alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
+                      {% endif %}
+                      <i class="far fa-edit mb-5"></i>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body p-4">
+                        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                        <hr class="mt-0 mb-4">
+                        <div class="row pt-1">
+                          <div class="col-6 mb-3">
+                            <h6>Ta'rifi</h6>
+                            {% if user.profile.status == 'LY' %}
+                              <p class="text-muted">Lyuks</p>
+                            {% else %}
+                              <p class="text-muted">Standard</p>
+                            {% endif %}
+                          </div>
+                          <div class="col-6 mb-3">
+                            <h6>Telefon raqami</h6>
+                            <p class="text-muted">{{user.profile.tel_number}}</p>
+                          </div>
+                        </div>
+                        <hr class="mt-0 mb-4">
+                        <div class="row pt-1">
+                          <div class="col-6 mb-3">
+                            <h6>Kelish kuni</h6>
+                            <p class="text-muted">{{ user.profile.arrival_date|date:"d.m.Y" }}</p>
+                          </div>
+                          <div class="col-6 mb-3">
+                            <h6>Ketish kuni</h6>
+                            <p class="text-muted">{{ user.profile.time_to_leave|date:"d.m.Y" }}</p>
+                          </div>
+                          <div class="shadow" style="border: 1px solid orange; width: 100%; height: 400px; overflow: auto; border-radius: 20px;">
+                            <table style="color: #fbab7e;" class="table table-striped">
+                              <thead>
+                                  <tr>
+                                      <th>Servis nomi</th>
+                                      <th>Servis ta'rifi</th>
+                                      <th>Vaqti</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% for i in used_services %}
+                                    {% if i.which_services.who_has_this == 'ST' %}
+                                      <tr class="shadow">
+                                        <td style="color: #13deb9; font-weight: bold;">{{ i.which_services }}</td>
+                                        <td>
+                                            <span style="color: white; font-weight: bold;" class="badge badge-success btn btn-success">Lyuks</span>
+                                        </td>
+                                        <td style="color: #13deb9; font-weight: bold;">{{ i.when|date:"d.m.Y" }}</td>
+                                      </tr>
+                                    {% else %}
+                                      <tr class="shadow">
+                                        <td style="color: #5d87ff; font-weight: bold;">{{ i.which_services }}</td>
+                                        <td>
+                                            <span style="color: white; font-weight: bold;" class="badge badge-success btn btn-primary">Lyuks</span>
+                                        </td>
+                                        <td style="color: #5d87ff; font-weight: bold;">{{ i.when|date:"d.m.Y" }}</td>
+                                      </tr>
+                                    {% endif %}
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+    </div>
+{% endblock content %}

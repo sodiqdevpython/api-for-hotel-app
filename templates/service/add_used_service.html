@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="who_used" value="{{ form.who_used.value }}">
+        <input type="hidden" name="which_services" value="{{ form.which_services.value }}">
+        <h2>Ism: {{ user_name }}</h2>
+        <h4>Servis nomi: {{ service }}</h4>
+        <img class="shadow" style="width: 400px; border-radius: 20px;" src="{{ service.image.url }}" /><br>
+        <input type="submit" class="btn btn-primary shadow mt-5 shadow" value="Tasdiqlash">
+    </form>
+</div>
+{% endblock content %}
