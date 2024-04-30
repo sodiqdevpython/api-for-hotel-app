@@ -1,11 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Category, Services, Profile, UsedServices, MultipleServiceImages, LoginSystem
-from .serializers import CategorySerializer, ServiceSerializer, MultipleServiceImageSerializer, ProfileSerializer, UsedServicesSerializer
+from .models import Category, Services, UsedServices, MultipleServiceImages, LoginSystem, Ordering
+from .serializers import CategorySerializer, ServiceSerializer, MultipleServiceImageSerializer, ProfileSerializer, UsedServicesSerializer, ReadOrderingSerializer, CreateOrderingSerializer
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView, CreateAPIView
 from django.contrib.auth.models import User
 
 
@@ -18,10 +17,6 @@ class ListCategories(APIView):
             'categories': serialized.data
         }
         return Response(context)
-
-# class DetailServiceView(RetrieveAPIView):
-#     queryset = Services
-#     serializer_class = ServiceSerializer
 
 class DetailServiceView(APIView):
 
@@ -78,10 +73,6 @@ class MultipleServiceImageView(ListAPIView):
     queryset = MultipleServiceImages.objects.all()
     serializer_class = MultipleServiceImageSerializer
 
-# class ProfileView(ListAPIView):
-#     queryset = Profile.objects.all()
-#     serializer_class = ProfileSerializer
-
 class ProfileView(APIView):
 
     def get(self, request, user):
@@ -127,3 +118,47 @@ class LoginViewAPI(APIView):
             }
         
         return Response(context)
+
+class ReadOrderingView(ListAPIView):
+    queryset = Ordering.objects.all()
+    serializer_class = ReadOrderingSerializer
+
+class ReadOrderingDetailView(APIView):
+    def get(self, request, service_id, username):
+        service_db = Ordering.objects.filter(service=service_id)
+        serializered_data = ReadOrderingSerializer(service_db, many=True).data
+        user_has = Ordering.objects.filter(service=service_id, user__username__username=username)
+        return Response({'result': serializered_data, 'user_has': len(user_has)==1, 'len': len(serializered_data)})
+
+    def post(self, request, service_id, username):
+        user_has = Ordering.objects.filter(service=service_id, user__username__username=username)
+        if len(user_has)==1:
+            user_has.delete()
+            return Response({'status': "deleted"})
+        else:
+            get_data = request.data
+            serializered = CreateOrderingSerializer(data=get_data)
+            if serializered.is_valid():
+                serializered.save()
+                return Response({'status': 'ok'})
+            else:
+                return Response({'error message': serializered.errors})
+
+
+
+# @api_view(['POST'])
+# def add_order(request, service_id, user_id):
+#     which_service = get_object_or_404(Services, id=service_id)
+#     if not which_service.users_for.filter(id=user_id).exists():
+#         which_service.users_for.add(user_id)
+#         a = "Qo'shildi"
+#     else:
+#         which_service.users_for.remove(user_id)
+#         a = "O'chirildi"
+#
+#     return Response({
+#         'status': 'ok',
+#         'service_id': service_id,
+#         'user_id': user_id,
+#         'result': a
+#     })

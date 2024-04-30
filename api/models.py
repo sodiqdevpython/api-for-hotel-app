@@ -12,6 +12,19 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class LoginSystem(models.Model):
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    password = models.CharField(max_length=200)
+
+    def __str__(self):
+        return str(self.username)
+
+    class Meta:
+        verbose_name = 'Login System'
+        verbose_name_plural = 'Login systems'
+
+# class OrderAddFiltering(models.Model):
+#     which_service = models.ForeignKe
 
 class Services(models.Model):
     class whoHasThisChoice(models.TextChoices):
@@ -30,6 +43,10 @@ class Services(models.Model):
     image = models.ImageField(upload_to='image/')
     more_images = models.ManyToManyField('MultipleServiceImages', blank=True)
     qr_code = models.ImageField(upload_to='qr_code/', blank=True)
+
+    users_for = models.ManyToManyField(LoginSystem, blank=True, null=True)
+    duration = models.PositiveIntegerField(default=0)
+
 
     def save(self, *args, **kwargs):
         qr = qrcode.QRCode(
@@ -81,17 +98,6 @@ class Profile(models.Model):
         return self.who.username
 
 
-class LoginSystem(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
-    password = models.CharField(max_length=200)
-
-    def __str__(self):
-        return str(self.username)
-    
-    class Meta:
-        verbose_name = 'Login System'
-        verbose_name_plural = 'Login systems'
-
 class UsedServices(models.Model):
     who_used = models.ForeignKey(Profile, on_delete=models.CASCADE)
     which_services = models.ForeignKey(Services, on_delete=models.CASCADE)
@@ -118,5 +124,21 @@ class UsedServices(models.Model):
     def save(self, *args, **kwargs):
         # Obyekt uchun clean metodini chaqirish (bu cheklovlarni qo'llaydi)
         self.clean()
-        # Agar clean metodida hech qanday muammo bo'lmasa, ob'ektni saqlash
+        # Agar clean metodida hech qanday muammo bo'lmasa, obyektni saqlash
         super().save(*args, **kwargs)
+
+
+class Ordering(models.Model):
+    service = models.ForeignKey(Services, on_delete=models.CASCADE)
+    user = models.ForeignKey(LoginSystem, on_delete=models.CASCADE)
+    order_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # unique_together = ('service', 'user')
+        ordering = ['id']
+
+    def __str__(self):
+        return f"{self.service} | {self.user} | {self.order_date}"
+
+    # def used_services_count(self):
+    #     return self.usedservices_set.count()

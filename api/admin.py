@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Services, MultipleServiceImages, Profile, UsedServices, LoginSystem
+from .models import Category, Services, MultipleServiceImages, Profile, UsedServices, LoginSystem, Ordering
 
 admin.site.register(Category)
 
@@ -21,3 +21,5 @@ class AdminViewUsedServices(admin.ModelAdmin):
 class AdminViewLoginSystem(admin.ModelAdmin):
     list_display = ['username', 'password']
     search_fields = ['username', 'password']
+
+admin.site.register(Ordering)

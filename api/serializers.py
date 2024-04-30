@@ -1,6 +1,6 @@
+from rest_framework.fields import DateTimeField
 from rest_framework.serializers import ModelSerializer
-from .models import Category, Services, Profile, UsedServices, MultipleServiceImages
-from django.contrib.auth.models import User
+from .models import Category, Services, Profile, UsedServices, MultipleServiceImages, Ordering
 from rest_framework import serializers
 
 
@@ -13,7 +13,7 @@ class CategorySerializer(ModelSerializer):
 class ServiceSerializer(ModelSerializer):
     class Meta:
         model = Services
-        fields = ['id' ,'title', 'open', 'close', 'location', 'who_has_this', 'category', 'tel_number', 'info', 'image','qr_code' ,'more_images']
+        fields = ['id' ,'title', 'open', 'close', 'location', 'who_has_this', 'category', 'tel_number', 'info', 'image','qr_code' ,'more_images', 'users_for', 'duration']
         depth = 2
 
 
@@ -27,9 +27,6 @@ class ProfileSerializer(ModelSerializer):
     class Meta:
         model = Profile
         fields = '__all__'
-
-
-from rest_framework.fields import DateTimeField
 
 class UsedServicesSerializer(ModelSerializer):
     user_name = serializers.SerializerMethodField()
@@ -48,5 +45,20 @@ class UsedServicesSerializer(ModelSerializer):
         return obj.which_services.title
 
     def get_image(self, obj):
-        print(obj.which_services.image)
         return str(obj.which_services.image)
+
+
+class ReadOrderingSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Ordering
+        fields = ['service', 'user', 'order_date']
+
+    def get_user(self, obj):
+        return obj.user.username.username
+
+class CreateOrderingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ordering
+        fields = ['service', 'user']
