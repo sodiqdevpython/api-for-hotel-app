@@ -50,13 +50,16 @@ class UsedServicesSerializer(ModelSerializer):
 
 class ReadOrderingSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
-
+    user_id = serializers.SerializerMethodField()
     class Meta:
         model = Ordering
-        fields = ['service', 'user', 'order_date']
+        fields = ['service', 'user', 'order_date', 'user_id']
 
     def get_user(self, obj):
         return obj.user.username.username
+
+    def get_user_id(self, obj):
+        return obj.user.id
 
 class CreateOrderingSerializer(serializers.ModelSerializer):
     class Meta:

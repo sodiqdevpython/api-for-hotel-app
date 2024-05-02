@@ -128,7 +128,17 @@ class ReadOrderingDetailView(APIView):
         service_db = Ordering.objects.filter(service=service)
         serializered_data = ReadOrderingSerializer(service_db, many=True).data
         user_has = Ordering.objects.filter(service=service, user=user)
-        return Response({'result': serializered_data, 'user_has': len(user_has)==1, 'len': len(serializered_data)})
+        if len(user_has)==1:
+            service_duration = Services.objects.get(id=service).duration
+            count = 0
+            for i in serializered_data:
+                if i['user_id'] == user:
+                    waiting_time = count*service_duration
+                else:
+                    count+=1
+            return Response({'result': serializered_data, 'user_has': len(user_has) == 1, 'len': len(serializered_data), 'waiting_time': waiting_time})
+        else:
+            return Response({'result': serializered_data, 'user_has': len(user_has) == 1, 'len': len(serializered_data)})
 
 class CreateOrderingDetailView(APIView):
     def post(self, request):
@@ -144,21 +154,3 @@ class CreateOrderingDetailView(APIView):
         else:
             user_has.delete()
             return Response({'status': 'deleted'})
-
-
-# @api_view(['POST'])
-# def add_order(request, service_id, user_id):
-#     which_service = get_object_or_404(Services, id=service_id)
-#     if not which_service.users_for.filter(id=user_id).exists():
-#         which_service.users_for.add(user_id)
-#         a = "Qo'shildi"
-#     else:
-#         which_service.users_for.remove(user_id)
-#         a = "O'chirildi"
-#
-#     return Response({
-#         'status': 'ok',
-#         'service_id': service_id,
-#         'user_id': user_id,
-#         'result': a
-#     })
