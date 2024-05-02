@@ -124,26 +124,26 @@ class ReadOrderingView(ListAPIView):
     serializer_class = ReadOrderingSerializer
 
 class ReadOrderingDetailView(APIView):
-    def get(self, request, service_id, username):
-        service_db = Ordering.objects.filter(service=service_id)
+    def get(self, request, service, user):
+        service_db = Ordering.objects.filter(service=service)
         serializered_data = ReadOrderingSerializer(service_db, many=True).data
-        user_has = Ordering.objects.filter(service=service_id, user__username__username=username)
+        user_has = Ordering.objects.filter(service=service, user=user)
         return Response({'result': serializered_data, 'user_has': len(user_has)==1, 'len': len(serializered_data)})
 
-    def post(self, request, service_id, username):
-        user_has = Ordering.objects.filter(service=service_id, user__username__username=username)
-        if len(user_has)==1:
-            user_has.delete()
-            return Response({'status': "deleted"})
-        else:
-            get_data = request.data
+class CreateOrderingDetailView(APIView):
+    def post(self, request):
+        get_data = request.data
+        user_has = Ordering.objects.filter(service=get_data['service'], user=get_data['user'])
+        if len(user_has)==0:
             serializered = CreateOrderingSerializer(data=get_data)
             if serializered.is_valid():
                 serializered.save()
-                return Response({'status': 'ok'})
+                return Response({'status': "ok"})
             else:
-                return Response({'error message': serializered.errors})
-
+                return Response({'status': serializered.errors})
+        else:
+            user_has.delete()
+            return Response({'status': 'deleted'})
 
 
 # @api_view(['POST'])
