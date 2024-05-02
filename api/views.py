@@ -44,7 +44,8 @@ class DetailServiceView(APIView):
             'status': 'ok',
             'used': is_used,
             'is_allowed': is_allowed,
-            'data': serializered
+            'data': serializered,
+            'user_id': LoginSystem.objects.get(username__username=user).id,
         })
 
 class ListServices(APIView):
