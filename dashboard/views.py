@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from api.models import Profile, LoginSystem, UsedServices, Services
+from django.shortcuts import render, redirect, get_object_or_404
+from api.models import Profile, LoginSystem, UsedServices, Services, Ordering
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import CreateNewUserForm, CustomLoginForm, CreateServiceForm, UsedServiceForm
@@ -131,9 +131,11 @@ def add_used_service(request, username, which_service_id):
     service = get_object_or_404(Services, pk=which_service_id)
 
     if request.method == 'POST':
+        delete_order = get_object_or_404(Ordering, service__id=which_service_id, user__username__username=username)
         form = UsedServiceForm(request.POST)
         if form.is_valid():
             form.save()
+            delete_order.delete()
             return redirect('success_page')
     else:
         initial_data = {'who_used': profile.id, 'which_services': service.id}
